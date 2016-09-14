@@ -34,9 +34,15 @@ class BPE(object):
 
     def __init__(self, codes, separator='@@'):            
         
+        self.bpe_codes = []
+        self.bpe_subwords = []
         with codecs.open(codes.name, encoding='utf-8') as codes:
-            self.bpe_codes = [tuple(item.split()) for item in codes]
-         
+            for item in codes:
+                item = item.split()
+                if len(item) == 2:
+                    self.bpe_codes.append(tuple(item))
+                self.bpe_subwords.append(''.join(item))
+
         # some hacking to deal with duplicates (only consider first instance)
         self.bpe_codes = dict([(code,i) for (i,code) in reversed(list(enumerate(self.bpe_codes)))])
 
@@ -47,7 +53,8 @@ class BPE(object):
 
         output = []
         for word in sentence.split():
-            output += list(encode(word, self.bpe_codes))
+            for sw in encode(word, self.bpe_codes):
+                output.append(sw if sw in self.bpe_subwords else '<unk>')
 
         return ' '.join(output)
 

@@ -186,6 +186,8 @@ if __name__ == '__main__':
 
     chars, stats, indices = get_pair_statistics(sorted_vocab)
     assert args.symbols >= len(chars)
+    for c in sorted(chars):
+        args.output.write('{0}\n'.format(c))
 
     big_stats = copy.deepcopy(stats)
     # threshold is inspired by Zipfian assumption, but should only affect speed
