@@ -47,11 +47,7 @@ class BPE(object):
 
         output = []
         for word in sentence.split():
-            new_word = encode(word, self.bpe_codes)
-
-            for item in new_word[:-1]:
-                output.append(item + self.separator)
-            output.append(new_word[-1])
+            output += list(encode(word, self.bpe_codes))
 
         return ' '.join(output)
 
@@ -128,12 +124,6 @@ def encode(orig, bpe_codes, cache={}):
             break
         else:
             pairs = get_pairs(word)
-
-    # don't print end-of-word symbols
-    if word[-1] == '</w>':
-        word = word[:-1]
-    elif word[-1].endswith('</w>'):
-        word = word[:-1] + (word[-1].replace('</w>',''),)
 
     cache[orig] = word
     return word

@@ -116,6 +116,9 @@ def update_pair_statistics(pair, changed, stats, indices):
 def get_pair_statistics(vocab):
     """Count frequency of all symbol pairs, and create index"""
 
+    # set of initial characters
+    chars = set()
+
     # data structure of pair frequencies
     stats = defaultdict(int)
 
@@ -123,13 +126,14 @@ def get_pair_statistics(vocab):
     indices = defaultdict(lambda: defaultdict(int))
 
     for i, (word, freq) in enumerate(vocab):
+        chars |= set(word)
         prev_char = word[0]
         for char in word[1:]:
             stats[prev_char, char] += freq
             indices[prev_char, char][i] += 1
             prev_char = char
 
-    return stats, indices
+    return chars, stats, indices
 
 
 def replace_pair(pair, vocab, indices):
@@ -180,11 +184,13 @@ if __name__ == '__main__':
     vocab = dict([(tuple(x)+('</w>',) ,y) for (x,y) in vocab.items()])
     sorted_vocab = sorted(vocab.items(), key=lambda x: x[1], reverse=True)
 
-    stats, indices = get_pair_statistics(sorted_vocab)
+    chars, stats, indices = get_pair_statistics(sorted_vocab)
+    assert args.symbols >= len(chars)
+
     big_stats = copy.deepcopy(stats)
     # threshold is inspired by Zipfian assumption, but should only affect speed
     threshold = max(stats.values()) / 10
-    for i in range(args.symbols):
+    for i in range(args.symbols - len(chars)):
         if stats:
             most_frequent = max(stats, key=stats.get)
 
