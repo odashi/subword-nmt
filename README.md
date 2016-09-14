@@ -20,9 +20,9 @@ To segment rare words into character n-grams, do the following:
     ./get_vocab.py < {train_file} > {vocab_file}
     ./segment-char-ngrams.py --vocab {vocab_file} -n {order} --shortlist {size} < {test_file}
 
-The original segmentation can be restored with a simple replacement:
+The original segmentation can be restored by following:
 
-    sed "s/@@ //g"
+    ./restore_words.py < {subwords_file}
 
 PUBLICATIONS
 ------------
